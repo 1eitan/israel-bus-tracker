@@ -1,0 +1,9 @@
+node_modules
+dist
+.env
+
+mobile/node_modules
+mobile/.expo
+mobile/.env
+mobile/android
+mobile/ios
