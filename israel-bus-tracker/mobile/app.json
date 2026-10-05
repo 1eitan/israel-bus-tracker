@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "אוטובוסים בזמן אמת",
+    "slug": "israel-bus-tracker",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#111111",
+    "supportsRTL": true,
+    "ios": {
+      "bundleIdentifier": "il.example.bustracker",
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "המיקום משמש להצגת תחנות וקווים בקרבתך.",
+        "NFCReaderUsageDescription": "ה-NFC משמש לקריאת כרטיס הרב-קו."
+      },
+      "config": { "googleMapsApiKey": "REPLACE_WITH_IOS_GOOGLE_MAPS_KEY" }
+    },
+    "android": {
+      "package": "il.example.bustracker",
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION", "NFC"],
+      "config": { "googleMaps": { "apiKey": "REPLACE_WITH_ANDROID_GOOGLE_MAPS_KEY" } }
+    },
+    "plugins": [
+      "expo-font",
+      ["expo-location", { "locationWhenInUsePermission": "המיקום משמש להצגת תחנות וקווים בקרבתך." }],
+      [
+        "react-native-nfc-manager",
+        {
+          "nfcPermission": "ה-NFC משמש לקריאת כרטיס הרב-קו.",
+          "selectIdentifiers": ["315449432E494341"],
+          "includeNdefEntitlement": false
+        }
+      ]
+    ],
+    "extra": { "eas": { "projectId": "" } }
+  }
+}
