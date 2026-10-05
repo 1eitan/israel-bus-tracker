@@ -24,11 +24,11 @@ const DEFAULT_ZOOM = 13;
 
 const TILE_LAYERS: Record<Theme, { url: string; className: string }> = {
   light: {
-    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
     className: 'tiles-light'
   },
   dark: {
-    url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
     className: 'tiles-dark'
   }
 };
