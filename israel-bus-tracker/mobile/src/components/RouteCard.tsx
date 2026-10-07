@@ -1,52 +1,87 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet, View } from 'react-native';
 
-import { colors, fonts, radius, space } from '../theme/tokens';
+import { forwardChevron } from '../lib/rtl';
+import { colors, radius, space } from '../theme/tokens';
 import AppText from './AppText';
+import ArrivalBadge from './ArrivalBadge';
+import FavoriteButton from './FavoriteButton';
+import LineBadge from './LineBadge';
+import PressableScale from './PressableScale';
+import StatusBadge, { type StatusKind } from './StatusBadge';
 
-interface Props {
+export interface RouteCardProps {
   routeNumber: string;
   destination: string;
-  /** טקסט זמן הגעה, למשל "1 דק׳" - מוצג בירוק */
-  eta: string;
+  /** שם המפעיל (אגד, דן...) */
+  operator?: string;
+  /** כיוון / מוצא-יעד */
+  direction?: string;
+  /** מספר תחנות במסלול */
+  stopsCount?: number;
+  /** "3 דק׳" - אם אין, לא מוצג */
+  eta?: string;
+  etaColor?: string;
+  status?: { label: string; kind: StatusKind };
   badgeColor?: string;
   badgeTextColor?: string;
-  /** שורת משנה (למשל עיכוב) */
-  note?: string;
+  favorite?: boolean;
+  onToggleFavorite?: () => void;
   onPress?: () => void;
 }
 
-/** כרטיס קו: מספר קו מימין, יעד באמצע, זמן הגעה בירוק משמאל (ב-RTL) */
+/** כרטיס קו: מספר קו גדול, יעד, מפעיל, כיוון, תחנות, זמן הגעה וסטטוס. */
 export default function RouteCard({
   routeNumber,
   destination,
+  operator,
+  direction,
+  stopsCount,
   eta,
-  badgeColor = colors.primary,
-  badgeTextColor = colors.text,
-  note,
+  etaColor,
+  status,
+  badgeColor,
+  badgeTextColor,
+  favorite,
+  onToggleFavorite,
   onPress
-}: Props) {
+}: RouteCardProps) {
+  const meta = [operator, direction, stopsCount !== undefined ? `${stopsCount} תחנות` : null]
+    .filter(Boolean)
+    .join(' · ');
+
   return (
-    <Pressable
+    <PressableScale
       accessibilityRole={onPress ? 'button' : undefined}
+      accessibilityLabel={`קו ${routeNumber} ל${destination}${eta ? `, מגיע ${eta}` : ''}${status ? `, ${status.label}` : ''}`}
       onPress={onPress}
       disabled={!onPress}
+      scaleTo={0.99}
       style={styles.card}
     >
-      <View style={[styles.badge, { backgroundColor: badgeColor }]}>
-        <AppText style={[styles.badgeText, { color: badgeTextColor }]} numberOfLines={1}>
-          {routeNumber}
-        </AppText>
-      </View>
+      <LineBadge routeNumber={routeNumber} color={badgeColor} textColor={badgeTextColor} size="lg" />
+
       <View style={styles.center}>
-        <AppText numberOfLines={1}>{destination}</AppText>
-        {note ? (
-          <AppText variant="caption" style={styles.note}>
-            {note}
+        <AppText variant="heading" numberOfLines={1}>
+          {destination}
+        </AppText>
+        {meta ? (
+          <AppText variant="caption" numberOfLines={2}>
+            {meta}
           </AppText>
         ) : null}
+        {status ? <StatusBadge label={status.label} kind={status.kind} /> : null}
       </View>
-      <AppText style={styles.eta}>{eta}</AppText>
-    </Pressable>
+
+      <View style={styles.end}>
+        {eta ? <ArrivalBadge label={eta} kind="now" color={etaColor} /> : null}
+        {onToggleFavorite ? (
+          <FavoriteButton active={!!favorite} onToggle={onToggleFavorite} name={`קו ${routeNumber}`} />
+        ) : onPress ? (
+          <Ionicons name={forwardChevron()} size={18} color={colors.textSecondary} />
+        ) : null}
+      </View>
+    </PressableScale>
   );
 }
 
@@ -56,21 +91,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: space(3),
     padding: space(3),
-    borderRadius: radius.md,
-    backgroundColor: colors.card,
+    borderRadius: radius.card,
+    backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border
   },
-  badge: {
-    minWidth: space(10),
-    height: space(10),
-    paddingHorizontal: space(2),
-    borderRadius: radius.md,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  badgeText: { fontFamily: fonts.bold, fontSize: 16 },
-  center: { flex: 1 },
-  note: { color: colors.warning, marginTop: 2 },
-  eta: { fontFamily: fonts.bold, fontSize: 15, color: colors.success }
+  center: { flex: 1, gap: space(1) },
+  end: { alignItems: 'flex-end', gap: space(1) }
 });

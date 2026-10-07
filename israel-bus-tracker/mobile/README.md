@@ -20,8 +20,8 @@
 | מיקומי אוטובוסים | Socket.io מה-backend (אותם אירועים כמו ב-web); מושהה כשהאפליקציה ברקע |
 | זמני הגעה | `/api/stops/nearby` ו-`/api/stops/:id/arrivals`, polling כל 15 שניות |
 | GPS | `expo-location`, תחנות בטווח 500 מ' מהמשתמש |
-| NFC | `react-native-nfc-manager`: זיהוי כרטיס (UID) ו-SELECT ליישום |
-| מועדפים / חיפושים אחרונים | AsyncStorage מקומי |
+| NFC | `react-native-nfc-manager`: זיהוי כרטיס NFC (UID) **בלבד**, קריאה בלבד. אין AID/APDU מאומתים, ולכן לא נשלחת אף פקודה לכרטיס |
+| מועדפים / היסטוריה / פרופיל והעדפות | AsyncStorage מקומי (עובד offline), דרך `src/core/store.ts` |
 
 ## SIRI (משרד התחבורה)
 
@@ -34,11 +34,32 @@
 
 ## מה עדיין לא אמיתי
 
-- **רב-קו:** קריאת יתרה דורשת פענוח קבצי Calypso לפי מפרט הרב-קו (`parseRavKavBalance` מחזיר `null`), וה-AID ב-`src/lib/ravkav.ts` דורש אימות. טעינה לכרטיס אפשרית רק דרך מערכות הטעינה הרשמיות.
-- **תכנון מסלול:** כרגע מאתר יעד (geocoding) ומציג אותו במפה עם תחנות בסביבה. מסלול מלא מנקודה לנקודה דורש מתכנן (למשל OpenTripPlanner).
-- **תשלום ואזור אישי:** אין שירות חשבונות/סליקה. כפתור הוספת כרטיס לא אוסף מספר כרטיס; יש לחבר SDK של ספק סליקה עם טוקניזציה.
-- הערכים בשלוש המועדפים ושני החיפושים האחרונים הם ברירות מחדל בלבד.
+- **רב-קו:** קריאת יתרה/פרופיל/היסטוריה = `NOT_IMPLEMENTED`. נדרש מפרט רשמי מאומת (ראה `src/nfc/spec.ts`). AID/APDU לא מנוחשים. טעינה/כתיבה לכרטיס לא נתמכות.
+- **תכנון מסלול:** ארכיטקטורה קיימת (`src/routing`), אך אין מנוע: `NOT_IMPLEMENTED`. "הצג יעד במפה" עדיין מאתר יעד בלבד.
+- **תשלום ואזור אישי:** `PaymentProvider`/`AuthProvider`/`ProfileProvider` קיימים; אין ספק סליקה ואין שרת חשבונות => `NOT_IMPLEMENTED`.
+- שלושת המועדפים (בית, אורן משי, איקאה) הם ברירות מחדל מהעיצוב בלבד. החיפושים האחרונים מתחילים ריקים.
 
 ## טיפוגרפיה ועיצוב
 
 כל ה-tokens ב-`src/theme/tokens.ts` (צבעים, רדיוס, ריווח בכפולות של 4, Heebo). שימוש ב-StyleSheet ולא ב-Tailwind/NativeWind.
+
+## Providers: Mock / Real
+
+כל יכולת חיצונית (תשלום, חשבון, פרופיל, תכנון מסלול, NFC) עוברת interface; `src/providers/factory.ts` מרכיב אותם.
+
+| ברירת מחדל (גם ב-release) | מה קורה |
+| --- | --- |
+| `NotImplementedPaymentProvider` | כל פעולה => `NOT_IMPLEMENTED` |
+| `NotImplementedRoutePlanner` | `NOT_IMPLEMENTED` |
+| `RealAuthProvider` | אורח; התחברות => `NOT_IMPLEMENTED` |
+| `RealProfileProvider` | נשמר במכשיר; סנכרון חשבון => `NOT_IMPLEMENTED` |
+
+Mock מופעל רק ב-`__DEV__` **וגם** עם `EXPO_PUBLIC_USE_MOCK_PROVIDERS=1`, וה-UI מסמן "הדגמה". ב-release הוא לא נוצר.
+
+## בדיקות
+
+`npm test` (מקמפל את `tests/` ואת שכבת הלוגיקה הטהורה עם tsc ומריץ `node --test`; דורש `npm install` בגלל `@types/node`). 169 בדיקות לוגיקה. בדיקות UI/מכשיר/NFC אמיתי אינן חלק מהן. קובץ חדש בשכבה הטהורה צריך להיכנס ל-`include` ב-`tsconfig.test.json`.
+
+## כתובות שרת
+
+`EXPO_PUBLIC_API_URL` / `EXPO_PUBLIC_SOCKET_URL` (ראה `.env.example`). בפיתוח ברירת המחדל `http://localhost:4000`. ב-release אין ברירת מחדל, `http://` נחסם, ובלי כתובת https תקינה האפליקציה לא מבצעת בקשות רשת (`lib/url.ts`).

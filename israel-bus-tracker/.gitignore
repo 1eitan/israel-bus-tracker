@@ -1,9 +1,33 @@
+# dependencies / build output
 node_modules
 dist
-.env
+test-out/
+coverage/
+*.tsbuildinfo
 
-mobile/node_modules
+# environment (קבצי .env.example כן נכנסים ל-git)
+.env
+.env.*
+!.env.example
+!*/.env.example
+
+# Expo / native generated
 mobile/.expo
-mobile/.env
 mobile/android
 mobile/ios
+.expo/
+
+# signing material - לעולם לא ב-repo
+*.keystore
+*.jks
+*.p12
+*.mobileprovision
+*.pem
+
+# logs / OS / editor
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

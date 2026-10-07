@@ -150,7 +150,10 @@ export interface ServerToClientEvents {
 
 /** אירועי Socket.io מהלקוח לשרת */
 export interface ClientToServerEvents {
+  /** מחליף את כל המנויים הקיימים ('*' = כל הקווים; רשימה ריקה = כל הקווים) */
   subscribe: (payload: { routeIds: string[] }) => void;
+  /** מסיר מנויים לקווים שצוינו; בלי routeIds מסיר את כולם */
+  unsubscribe: (payload?: { routeIds?: string[] }) => void;
 }
 
 export const ALL_ROUTES_ROOM_KEY = '*';

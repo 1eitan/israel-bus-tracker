@@ -14,25 +14,44 @@
         "NSLocationWhenInUseUsageDescription": "המיקום משמש להצגת תחנות וקווים בקרבתך.",
         "NFCReaderUsageDescription": "ה-NFC משמש לקריאת כרטיס הרב-קו."
       },
-      "config": { "googleMapsApiKey": "REPLACE_WITH_IOS_GOOGLE_MAPS_KEY" }
+      "config": {
+        "googleMapsApiKey": "REPLACE_WITH_IOS_GOOGLE_MAPS_KEY"
+      }
     },
     "android": {
       "package": "il.example.bustracker",
-      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION", "NFC"],
-      "config": { "googleMaps": { "apiKey": "REPLACE_WITH_ANDROID_GOOGLE_MAPS_KEY" } }
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "NFC"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "REPLACE_WITH_ANDROID_GOOGLE_MAPS_KEY"
+        }
+      },
+      "allowBackup": false
     },
     "plugins": [
       "expo-font",
-      ["expo-location", { "locationWhenInUsePermission": "המיקום משמש להצגת תחנות וקווים בקרבתך." }],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "המיקום משמש להצגת תחנות וקווים בקרבתך."
+        }
+      ],
       [
         "react-native-nfc-manager",
         {
           "nfcPermission": "ה-NFC משמש לקריאת כרטיס הרב-קו.",
-          "selectIdentifiers": ["315449432E494341"],
           "includeNdefEntitlement": false
         }
       ]
     ],
-    "extra": { "eas": { "projectId": "" } }
+    "extra": {
+      "eas": {
+        "projectId": ""
+      }
+    }
   }
 }

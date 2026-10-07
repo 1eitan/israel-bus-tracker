@@ -60,7 +60,7 @@ export class SiriService {
     }
     const response = await axios.get<string>(this.buildUrl(stop.code), {
       responseType: 'text',
-      timeout: 10000,
+      timeout: this.config.requestTimeoutMs,
       headers
     });
     return this.parse(response.data, stop, resolveRoute);

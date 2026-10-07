@@ -92,7 +92,7 @@ export interface ServiceStatus {
   vehicleCount: number;
 }
 
-export type ConnectionStatus = 'connecting' | 'connected' | 'reconnecting';
+export type ConnectionStatus = 'connecting' | 'connected' | 'reconnecting' | 'offline';
 
 export interface UserLocation {
   lat: number;

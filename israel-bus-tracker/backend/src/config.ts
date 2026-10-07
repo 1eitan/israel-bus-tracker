@@ -41,6 +41,8 @@ export const config = {
   apiKeyHeader: process.env.GTFS_API_KEY_HEADER?.trim() || 'x-api-key',
   apiKeyParam: process.env.GTFS_API_KEY_PARAM?.trim() ?? '',
   staticDataPath: process.env.STATIC_DATA_PATH?.trim() ?? '',
+  /** timeout (ms) לכל בקשה יוצאת (GTFS-RT / SIRI) */
+  requestTimeoutMs: Math.max(1000, toInt(process.env.REQUEST_TIMEOUT_MS, 10000)),
   pollIntervalMs: Math.max(1000, toInt(process.env.POLL_INTERVAL_MS, 3000)),
   vehicleStaleMs: Math.max(10000, toInt(process.env.VEHICLE_STALE_MS, 120000))
 };

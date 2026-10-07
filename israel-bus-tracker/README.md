@@ -54,6 +54,16 @@ STATIC_DATA_PATH=./data/static.json
 ## מבנה
 
 ```
+backend/     שרת Node.js + Socket.io (קנוני)
+frontend/    לקוח web: React + Vite + Leaflet (קנוני)
+mobile/      אפליקציית Expo / React Native (קנוני)
+docs/        סטטוס פיצ'רים, מה מוכן, הערות שלבים
+.github/     CI
+```
+
+פירוט פנימי:
+
+```
 backend/src
   config.ts, server.ts
   types/gtfs.ts
@@ -72,3 +82,17 @@ frontend/src
 ## אפליקציית מובייל
 
 ראה `mobile/README.md`. ה-backend תומך גם ב-SIRI-SM (`SIRI_SM_URL`) וב-`GET /api/stops/nearby?lat=&lon=&radius=&limit=`.
+
+
+## מצב הפרויקט, בדיקות ומשתני סביבה
+
+- **סטטוס מדויק לכל פיצ'ר:** `docs/FEATURE_STATUS.md` (REAL / PARTIAL / MOCK / NOT_IMPLEMENTED). **מה מוכן ומה דורש שירות חיצוני:** `docs/WHAT_IS_READY.md`. המשך עבודה: `HANDOFF.md`. מה נעשה בכל שלב: `WORK_SUMMARY.md`.
+- **משתני סביבה:** `.env.example` (מפה מלאה), `backend/.env.example`, `frontend/.env.example`, `mobile/.env.example`. באפליקציה רק ערכים ציבוריים (`EXPO_PUBLIC_*` נראים בבנדל). ב-release חובה `EXPO_PUBLIC_API_URL` ב-**https**.
+- **בדיקות:**
+  ```bash
+  cd backend  && npm ci && npm run typecheck && npm test
+  cd frontend && npm ci && npm run typecheck
+  cd mobile   && npm install && npm run typecheck && npm test   # אין עדיין package-lock; ראה HANDOFF.md
+  ```
+  הבדיקות יושבות ליד הקוד שהן בודקות (`backend/src/__tests__`, `mobile/tests`) ולא בתיקיית `tests/` נפרדת. אין ESLint ואין בדיקות UI/מכשיר בפרויקט.
+- **מוגבלות ידועות:** ברירת מחדל של ה-backend היא `DEMO_MODE=true` (אוטובוסים מדומים); רב-קו (יתרה), תשלום ותכנון מסלול אינם ממומשים.

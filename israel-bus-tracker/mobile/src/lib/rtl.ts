@@ -18,3 +18,11 @@ export function ensureRtl(): boolean {
 }
 
 export const isRtl = (): boolean => I18nManager.isRTL;
+
+/** אייקון חץ "קדימה" (ל-drill-in) לפי כיוון הממשק: ב-RTL מצביע שמאלה. */
+export const forwardChevron = (): 'chevron-back' | 'chevron-forward' =>
+  I18nManager.isRTL ? 'chevron-back' : 'chevron-forward';
+
+/** אייקון חץ "אחורה" (חזרה) לפי כיוון הממשק: ב-RTL מצביע ימינה. */
+export const backChevron = (): 'chevron-back' | 'chevron-forward' =>
+  I18nManager.isRTL ? 'chevron-forward' : 'chevron-back';

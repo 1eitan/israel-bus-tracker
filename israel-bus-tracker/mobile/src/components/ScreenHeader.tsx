@@ -1,43 +1,52 @@
-import { Ionicons } from '@expo/vector-icons';
-import { I18nManager, Pressable, StyleSheet, View } from 'react-native';
+import type { ReactNode } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { backChevron } from '../lib/rtl';
 import { colors, space } from '../theme/tokens';
 import AppText from './AppText';
+import IconButton from './IconButton';
 
 interface Props {
   title: string;
+  subtitle?: string;
   onBack?: () => void;
+  /** פעולה בצד הנגדי לחזרה (למשל חיפוש/הגדרות) */
+  right?: ReactNode;
 }
 
 /**
- * כותרת ממורכזת מודגשת. חץ החזרה בצד ה"התחלה" - ימין ב-RTL - והוא מתהפך אוטומטית:
- * ב-RTL החץ מצביע ימינה (chevron-forward), ב-LTR שמאלה.
+ * Header נקי: כותרת גדולה ותת-כותרת. חץ חזרה בצד ההתחלה (ימין ב-RTL),
+ * החץ מתהפך לפי כיוון. תומך ב-SafeArea.
  */
-export default function ScreenHeader({ title, onBack }: Props) {
+export default function ScreenHeader({ title, subtitle, onBack, right }: Props) {
   const insets = useSafeAreaInsets();
   return (
-    <View style={[styles.container, { paddingTop: insets.top + space(2) }]}>
-      <View style={styles.side}>
-        {onBack ? (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="חזרה"
-            hitSlop={12}
-            onPress={onBack}
-          >
-            <Ionicons
-              name={I18nManager.isRTL ? 'chevron-forward' : 'chevron-back'}
-              size={26}
-              color={colors.text}
-            />
-          </Pressable>
+    <View style={[styles.container, { paddingTop: insets.top + space(3) }]}>
+      {onBack ? (
+        <IconButton
+          icon={backChevron()}
+          accessibilityLabel="חזרה"
+          onPress={onBack}
+        />
+      ) : null}
+      <View style={styles.titles}>
+        <AppText
+          variant="display"
+          accessibilityRole="header"
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.7}
+        >
+          {title}
+        </AppText>
+        {subtitle ? (
+          <AppText variant="caption" numberOfLines={1}>
+            {subtitle}
+          </AppText>
         ) : null}
       </View>
-      <AppText variant="title" style={styles.title} numberOfLines={1}>
-        {title}
-      </AppText>
-      <View style={styles.side} />
+      {right ?? null}
     </View>
   );
 }
@@ -46,10 +55,10 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: space(3),
     paddingHorizontal: space(4),
     paddingBottom: space(3),
     backgroundColor: colors.background
   },
-  side: { width: space(10), alignItems: 'flex-start' },
-  title: { flex: 1, textAlign: 'center' }
+  titles: { flex: 1, gap: 2 }
 });

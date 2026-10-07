@@ -20,6 +20,7 @@ import type {
   VehiclePosition
 } from '../types/gtfs';
 import { colorFromString, haversine, readableTextColor } from '../utils/geo';
+import { describeProviders, type ProvidersReport, type StaticSource } from '../providers';
 import { SiriService } from './siri.service';
 import { BusSimulator } from './simulator.service';
 
@@ -73,6 +74,8 @@ export class GtfsFetcherService extends EventEmitter {
   private stopFetchedAt = new Map<string, number>();
 
   private status: ServiceStatus;
+
+  private staticSource: StaticSource = 'none';
 
   constructor(private readonly config: AppConfig) {
     super();
@@ -141,6 +144,7 @@ export class GtfsFetcherService extends EventEmitter {
         const raw = fs.readFileSync(resolved, 'utf-8');
         const parsed = JSON.parse(raw) as StaticGtfsData;
         data = this.normalizeStaticData(parsed);
+        this.staticSource = 'file';
         console.log(
           `[fetcher] נטענו ${data.routes.length} קווים ו-${data.stops.length} תחנות מ-${resolved}`
         );
@@ -151,6 +155,7 @@ export class GtfsFetcherService extends EventEmitter {
 
     if (!data && this.config.demoMode) {
       data = buildDemoData();
+      this.staticSource = 'demo';
     }
 
     const finalData: StaticGtfsData = data ?? { routes: [], stops: [] };
@@ -248,7 +253,7 @@ export class GtfsFetcherService extends EventEmitter {
     }
     const response = await axios.get<ArrayBuffer>(this.buildRequestUrl(url), {
       responseType: 'arraybuffer',
-      timeout: 10000,
+      timeout: this.config.requestTimeoutMs,
       headers
     });
     return GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(
@@ -455,6 +460,10 @@ export class GtfsFetcherService extends EventEmitter {
 
   public getStatus(): ServiceStatus {
     return { ...this.status, vehicleCount: this.vehicles.size };
+  }
+
+  public getProviders(): ProvidersReport {
+    return describeProviders(this.config, this.staticSource);
   }
 
   public getVehicles(routeIds?: string[]): VehiclePosition[] {
